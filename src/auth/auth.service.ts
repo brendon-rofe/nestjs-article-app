@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
 import { RegisterDto } from "./dto/register.dto";
 import * as bcrypt from 'bcrypt';
+import { LoginDto } from "./dto/login.dto";
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,16 @@ export class AuthService {
       password: hashedPassword
     });
     return newUser;
+  }
+
+  public async getAuthenticatedUser(dto: LoginDto, plainTextPassword: string) {
+    try {
+      const user = await this.userService.getUserByEmail(dto);
+      await this.verifyPassword(plainTextPassword, user.password);
+      return user;
+    } catch {
+      throw new HttpException('Wring credentials provided', HttpStatus.BAD_REQUEST);
+    }
   }
 
   private async verifyPassword(plainTextPassword: string, hashedPassword: string) {
