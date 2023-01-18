@@ -25,7 +25,7 @@ export class UserService {
     return user;
   }
 
-  getAllUsers() {
-    return this.prisma.user.findMany();
+  async getAllUsers() {
+    return await this.prisma.user.findMany();
   }
 }
